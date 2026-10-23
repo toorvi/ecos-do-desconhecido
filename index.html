@@ -37,6 +37,14 @@
       <p id="authMessage" class="auth-message" aria-live="polite">Você ainda não está conectado.</p>
     </section>
 
+    <section class="sheet auth-panel" id="resetPasswordPanel" hidden>
+      <div class="sheet-heading"><div><p class="eyebrow">RECUPERAR ACESSO</p><h2>Crie uma nova senha</h2></div></div>
+      <p class="intro-copy auth-copy">Digite uma nova senha para sua conta.</p>
+      <label class="field full">Nova senha<input id="newPassword" type="password" autocomplete="new-password" placeholder="Pelo menos 6 caracteres" minlength="6" required></label>
+      <button id="updatePasswordButton" type="button">Salvar nova senha</button>
+      <p id="resetPasswordMessage" class="auth-message" aria-live="polite"></p>
+    </section>
+
     <section class="sheet account-panel" id="accountPanel" hidden>
       <div class="account-row"><div><p class="eyebrow">SESSÃO ATIVA</p><h2 id="accountLabel">Conta conectada</h2><p id="roleLabel" class="auth-message"></p></div><button id="logoutButton" class="quiet-button" type="button">Sair</button></div>
       <div class="identity-grid">
