@@ -156,6 +156,16 @@ document.getElementById("signupButton").addEventListener("click", async()=>{
   if(data.session) await refreshSession(data.session);
   else setAuthMessage("Conta criada! Confira seu e-mail para confirmar o cadastro e depois entre.");
 });
+document.getElementById("forgotPasswordButton").addEventListener("click", async()=>{
+  const email = document.getElementById("authEmail").value.trim();
+  if(!email){ setAuthMessage("Digite seu e-mail no campo acima antes de pedir a recuperação."); return; }
+  setAuthMessage("Enviando link de recuperação…");
+  const {error} = await db.auth.resetPasswordForEmail(email, {
+    redirectTo: "https://ecos-do-desconhecido.vercel.app/"
+  });
+  if(error){ setAuthMessage("Não foi possível enviar o link: " + error.message); return; }
+  setAuthMessage("Se esse e-mail estiver cadastrado, você receberá um link de recuperação. Confira também o spam.");
+});
 document.getElementById("loginButton").addEventListener("click", async()=>{
   const email = document.getElementById("authEmail").value.trim();
   const password = document.getElementById("authPassword").value;
