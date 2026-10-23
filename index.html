@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11100f">
+  <title>Ecos do Desconhecido — Ficha</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Ecos do Desconhecido">
+      <span class="brand-eye">◉</span>
+      <span><strong>ECOS</strong><small>DO DESCONHECIDO</small></span>
+    </a>
+    <div class="top-status"><span class="status-dot"></span> ARQUIVO DE PERSONAGEM <span class="version">PRÉVIA</span></div>
+  </header>
+
+  <main class="page">
+    <section class="intro">
+      <p class="eyebrow">REGISTRO Nº 001 · ACESSO RESTRITO</p>
+      <h1>O que resta<br><em>de você?</em></h1>
+      <p class="intro-copy">Toda descoberta deixa uma marca. Registre sua história antes que ela seja esquecida.</p>
+    </section>
+
+    <section class="sheet">
+      <div class="sheet-heading">
+        <div><p class="eyebrow">IDENTIFICAÇÃO</p><h2>Ficha de personagem</h2></div>
+        <span class="seal">ED<br><small>01</small></span>
+      </div>
+      <div class="identity-grid">
+        <label class="field wide">Nome do personagem<input id="characterName" placeholder="Nome ou codinome"></label>
+        <label class="field">Jogador<input id="playerName" placeholder="Seu nome"></label>
+        <label class="field">Idade<input id="age" type="number" min="0" placeholder="—"></label>
+        <label class="field wide">Conceito / ocupação<input id="concept" placeholder="Quem você era antes de tudo mudar?"></label>
+      </div>
+
+      <div class="section-title"><span>01</span><h3>Atributos</h3><p>Distribua seus valores conforme as regras da mesa.</p></div>
+      <div class="attributes">
+        <label class="attribute"><span class="attribute-symbol">✦</span><span class="attribute-name">Corpo<small>Força e resistência</small></span><input id="corpo" type="number" min="0" max="10" value="1"></label>
+        <label class="attribute"><span class="attribute-symbol">⌁</span><span class="attribute-name">Instinto<small>Percepção e reflexos</small></span><input id="instinto" type="number" min="0" max="10" value="1"></label>
+        <label class="attribute"><span class="attribute-symbol">⌘</span><span class="attribute-name">Razão<small>Lógica e conhecimento</small></span><input id="razao" type="number" min="0" max="10" value="1"></label>
+        <label class="attribute"><span class="attribute-symbol">◈</span><span class="attribute-name">Determinação<small>Foco e resistência mental</small></span><input id="determinacao" type="number" min="0" max="10" value="1"></label>
+        <label class="attribute"><span class="attribute-symbol">☷</span><span class="attribute-name">Influência<small>Presença e persuasão</small></span><input id="influencia" type="number" min="0" max="10" value="1"></label>
+      </div>
+
+      <div class="section-title"><span>02</span><h3>Teste de destino</h3><p>Role 1d20. Some um atributo quando necessário.</p></div>
+      <div class="dice-panel">
+        <div class="die" id="dieResult" aria-live="polite">20</div>
+        <div class="dice-copy"><strong>O acaso não explica tudo.</strong><span id="rollMessage">Quando estiver pronto, lance os dados.</span></div>
+        <div class="roll-controls">
+          <select id="rollAttribute" aria-label="Atributo para somar">
+            <option value="0">Sem atributo (+0)</option>
+            <option value="corpo">Corpo</option><option value="instinto">Instinto</option><option value="razao">Razão</option><option value="determinacao">Determinação</option><option value="influencia">Influência</option>
+          </select>
+          <button id="rollButton" type="button">Rolar d20 ↗</button>
+        </div>
+      </div>
+
+      <div class="section-title"><span>03</span><h3>Conexão & descobertas</h3><p>O desconhecido sempre cobra alguma coisa.</p></div>
+      <div class="identity-grid">
+        <label class="field">Nível de Conexão<select id="connection"><option value="0">0 — Adormecida</option><option value="1">1 — Latente</option><option value="2">2 — Desperta</option><option value="3">3 — Ressonante</option><option value="4">4 — Anômala</option></select></label>
+        <label class="field">Condição atual<input id="condition" placeholder="Ex.: abalado, ferido..."></label>
+        <label class="field full">Descobertas sobrenaturais<textarea id="discoveries" rows="3" placeholder="O que você viu? O que não consegue explicar?"></textarea></label>
+      </div>
+
+      <div class="section-title"><span>04</span><h3>História & anotações</h3><p>Escreva aquilo que não pode ser esquecido.</p></div>
+      <label class="field full">História do personagem<textarea id="history" rows="5" placeholder="De onde você veio? O que perdeu? O que procura?"></textarea></label>
+      <label class="field full notes-field">Anotações da sessão<textarea id="notes" rows="4" placeholder="Pistas, nomes, lugares e perguntas sem resposta..."></textarea></label>
+
+      <footer class="sheet-footer">
+        <span id="saveStatus">Prévia local · alterações salvas neste navegador</span>
+        <button id="resetButton" class="quiet-button" type="button">Limpar ficha</button>
+      </footer>
+    </section>
+    <p class="closing-note">NEM TUDO QUE É DESCOBERTO DEVE SER COMPREENDIDO.</p>
+  </main>
+</body>
+</html>
