@@ -242,8 +242,40 @@ document.getElementById("saveSecretButton").addEventListener("click",async()=>{
   await loadSecrets(currentCharacterId,result.data.id);
 });
 
+document.getElementById("updatePasswordButton").addEventListener("click", async()=>{
+  const password = document.getElementById("newPassword").value;
+  const message = document.getElementById("resetPasswordMessage");
+  if(password.length < 6){ message.textContent = "A nova senha precisa ter pelo menos 6 caracteres."; return; }
+  message.textContent = "Salvando nova senha…";
+  const {error} = await db.auth.updateUser({password});
+  if(error){ message.textContent = "Não foi possível trocar a senha: " + error.message; return; }
+  message.textContent = "Senha alterada! Você já pode entrar com a nova senha.";
+  document.getElementById("newPassword").value = "";
+  history.replaceState(null, "", window.location.pathname);
+  document.getElementById("resetPasswordPanel").hidden = true;
+  document.getElementById("authPanel").hidden = false;
+});
+
 (async()=>{
+  const isRecovery = window.location.hash.includes("type=recovery");
+  if(isRecovery){
+    authPanel.hidden = true;
+    accountPanel.hidden = true;
+    document.getElementById("gmPanel").hidden = true;
+    document.getElementById("resetPasswordPanel").hidden = false;
+    setAuthMessage("Defina uma nova senha para continuar.");
+  }
   const {data:{session}} = await db.auth.getSession();
-  await refreshSession(session);
-  db.auth.onAuthStateChange((_event,session)=>{ setTimeout(()=>refreshSession(session),0); });
+  if(!isRecovery) await refreshSession(session);
+  db.auth.onAuthStateChange((event,session)=>{
+    setTimeout(()=>{
+      if(event === "PASSWORD_RECOVERY"){
+        authPanel.hidden = true;
+        accountPanel.hidden = true;
+        document.getElementById("resetPasswordPanel").hidden = false;
+      } else if(!window.location.hash.includes("type=recovery")) {
+        refreshSession(session);
+      }
+    },0);
+  });
 })();
