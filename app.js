@@ -126,6 +126,45 @@ function queueSave(){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveCharacter, 800);
 }
+async function loadDiceRolls(){
+  const list = document.getElementById("rollHistoryList");
+  const message = document.getElementById("rollHistoryMessage");
+  if(!currentUser){
+    list.replaceChildren();
+    message.textContent = "Entre para salvar e consultar seu histórico.";
+    return;
+  }
+  message.textContent = "Carregando histórico…";
+  let query = db.from("dice_rolls").select("*").order("created_at",{ascending:false}).limit(50);
+  if(!isGM) query = query.eq("user_id",currentUser.id);
+  const {data,error} = await query;
+  if(error){
+    message.textContent = "Não foi possível carregar o histórico: " + error.message;
+    return;
+  }
+  list.replaceChildren();
+  if(!data?.length){
+    message.textContent = "Nenhuma rolagem registrada ainda.";
+    return;
+  }
+  message.textContent = isGM ? "Últimas 50 rolagens de todos os jogadores." : "Suas últimas 50 rolagens.";
+  for(const item of data){
+    const row = document.createElement("article");
+    row.className = "roll-history-item";
+    const main = document.createElement("div");
+    main.className = "roll-history-main";
+    const title = document.createElement("strong");
+    title.textContent = item.character_name || "Ficha sem nome";
+    const detail = document.createElement("span");
+    detail.textContent = `d20: ${item.roll_value} · ${item.attribute} ${item.bonus >= 0 ? "+" : ""}${item.bonus} = ${item.total}`;
+    main.append(title,detail);
+    const date = document.createElement("time");
+    date.dateTime = item.created_at;
+    date.textContent = new Date(item.created_at).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"});
+    row.append(main,date);
+    list.append(row);
+  }
+}
 async function refreshSession(session){
   currentUser = session?.user || null;
   if(!currentUser){
@@ -145,6 +184,7 @@ async function refreshSession(session){
   document.getElementById("roleLabel").textContent = isGM ? "Acesso: Mestre (GM)" : "Acesso: Jogador";
   document.getElementById("gmPanel").hidden = !isGM;
   await loadCharacters();
+  await loadDiceRolls();
 }
 document.getElementById("signupButton").addEventListener("click", async()=>{
   const email = document.getElementById("authEmail").value.trim();
@@ -186,7 +226,7 @@ for(const id of fields){
   el?.addEventListener("input", queueSave);
   el?.addEventListener("change", queueSave);
 }
-document.getElementById("rollButton").addEventListener("click",()=>{
+document.getElementById("rollButton").addEventListener("click", async()=>{
   const roll = Math.floor(Math.random()*20)+1;
   const selected = document.getElementById("rollAttribute").value;
   const bonus = selected === "0" ? 0 : Number(document.getElementById(selected).value || 0);
@@ -195,6 +235,26 @@ document.getElementById("rollButton").addEventListener("click",()=>{
   const natural = roll === 20 ? " · 20 natural!" : roll === 1 ? " · 1 natural!" : "";
   const attrName = selected === "0" ? "sem atributo" : document.querySelector('label.attribute input#'+selected)?.closest(".attribute")?.querySelector(".attribute-name")?.childNodes[0]?.textContent?.trim() || selected;
   document.getElementById("rollMessage").textContent = `Resultado: ${roll} + ${bonus} (${attrName}) = ${total}${natural}`;
+  if(!currentUser){
+    document.getElementById("rollHistoryMessage").textContent = "Entre na sua conta para salvar esta rolagem no histórico.";
+    return;
+  }
+  const payload = {
+    user_id: currentUser.id,
+    character_id: currentCharacterId,
+    character_name: document.getElementById("characterName").value.trim() || "Ficha sem nome",
+    roll_value: roll,
+    attribute: attrName,
+    bonus,
+    total
+  };
+  const {error} = await db.from("dice_rolls").insert(payload);
+  if(error){
+    document.getElementById("rollHistoryMessage").textContent = "Rolagem feita, mas não foi salva: " + error.message;
+    return;
+  }
+  document.getElementById("rollHistoryMessage").textContent = "Rolagem salva no histórico.";
+  await loadDiceRolls();
 });
 document.getElementById("resetButton").addEventListener("click",async()=>{
   if(!confirm("Limpar todos os campos desta ficha?")) return;
