@@ -21,3 +21,12 @@
 #gmPanel .field{margin-top:16px}
 #secretPicker{margin-top:16px}
 @media(max-width:650px){.account-row{align-items:flex-start}.auth-actions button{flex:1}}
+
+.roll-history-heading{margin-top:28px}
+.roll-history-list{display:grid;gap:8px;margin-top:14px}
+.roll-history-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 14px;border:1px solid var(--line);background:#ffffff03}
+.roll-history-main{display:flex;flex-direction:column;gap:5px;min-width:0}
+.roll-history-main strong{font-size:12px;font-weight:600;color:var(--text);overflow-wrap:anywhere}
+.roll-history-main span,.roll-history-item time{font-size:11px;color:var(--muted);line-height:1.5}
+.roll-history-item time{text-align:right;white-space:nowrap}
+@media(max-width:650px){.roll-history-item{align-items:flex-start;flex-direction:column;gap:7px}.roll-history-item time{text-align:left}}
