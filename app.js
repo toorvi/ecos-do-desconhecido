@@ -25,6 +25,7 @@ let currentImagePath = null;
 let saveTimer = null;
 let loadingCharacter = false;
 let secrets = [];
+let inventoryItems = [];
 
 function setAuthMessage(message){ authMessage.textContent = message; }
 
@@ -80,12 +81,20 @@ function localData(){
   const data = {};
   for(const id of fields) data[id] = document.getElementById(id)?.value ?? "";
   data.archetypes = selectedArchetypes();
+  data.resources = Object.fromEntries(["vitalityCurrent","vitalityMax","sanityCurrent","sanityMax","energyCurrent","energyMax"].map(id=>[id,Number(document.getElementById(id).value)||0]));
+  data.conditions = document.getElementById("conditionsInput").value.split(",").map(v=>v.trim()).filter(Boolean);
+  data.inventory = inventoryItems;
   return data;
 }
 function applyData(data){
   setCharacterPhoto(data.image_path || null);
   loadingCharacter = true;
   setArchetypes(data.archetypes || []);
+  const resources = data.resources || {};
+  for(const id of ["vitalityCurrent","vitalityMax","sanityCurrent","sanityMax","energyCurrent","energyMax"]) document.getElementById(id).value = resources[id] ?? (id.startsWith("energy") ? (id.endsWith("Max") ? 5 : 5) : 10);
+  document.getElementById("conditionsInput").value = Array.isArray(data.conditions) ? data.conditions.join(", ") : (data.conditions || "");
+  inventoryItems = Array.isArray(data.inventory) ? data.inventory : [];
+  renderInventory();
   for(const id of fields){
     const el = document.getElementById(id);
     const column = fieldToColumn[id];
@@ -98,6 +107,12 @@ function clearCharacterForm(){
   setCharacterPhoto(null);
   loadingCharacter = true;
   setArchetypes([]);
+  for(const id of ["vitalityCurrent","vitalityMax","sanityCurrent","sanityMax"]) document.getElementById(id).value = 10;
+  document.getElementById("energyCurrent").value = 5;
+  document.getElementById("energyMax").value = 5;
+  document.getElementById("conditionsInput").value = "";
+  inventoryItems = [];
+  renderInventory();
   for(const id of fields){
     const el = document.getElementById(id);
     if(!el) continue;
@@ -208,6 +223,10 @@ async function saveCharacter(){
   payload.user_id = currentUser.id;
   payload.image_path = currentImagePath;
   payload.archetypes = selectedArchetypes();
+  const formData = localData();
+  payload.resources = formData.resources;
+  payload.conditions = formData.conditions;
+  payload.inventory = formData.inventory;
   status.textContent = "Salvando online…";
   let result;
   if(currentCharacterId){
@@ -225,6 +244,44 @@ async function saveCharacter(){
   if(!existing) picker.add(new Option(payload.character_name || "Ficha sem nome", currentCharacterId));
   picker.value = currentCharacterId;
   status.textContent = "Ficha salva online.";
+}
+function renderInventory(){
+  const list = document.getElementById("inventoryList");
+  const message = document.getElementById("inventoryMessage");
+  list.replaceChildren();
+  message.textContent = inventoryItems.length ? `${inventoryItems.length} item(ns) no inventário.` : "Nenhum item adicionado.";
+  inventoryItems.forEach((item,index)=>{
+    const row=document.createElement("article"); row.className="inventory-item";
+    const info=document.createElement("div"); info.className="inventory-item-info";
+    const name=document.createElement("strong"); name.textContent=item.name;
+    const meta=document.createElement("span"); meta.textContent=`Quantidade: ${item.quantity}${item.details ? " · "+item.details : ""}`;
+    info.append(name,meta);
+    const remove=document.createElement("button"); remove.type="button"; remove.className="quiet-button"; remove.textContent="Remover"; remove.setAttribute("aria-label",`Remover ${item.name}`);
+    remove.addEventListener("click",()=>{ inventoryItems.splice(index,1); renderInventory(); queueSave(); });
+    row.append(info,remove); list.append(row);
+  });
+}
+document.getElementById("addInventoryItem").addEventListener("click",()=>{
+  const nameEl=document.getElementById("inventoryName");
+  const name=nameEl.value.trim();
+  if(!name){ document.getElementById("inventoryMessage").textContent="Digite o nome do item primeiro."; nameEl.focus(); return; }
+  inventoryItems.push({name,quantity:Math.max(1,Number(document.getElementById("inventoryQuantity").value)||1),details:document.getElementById("inventoryDetails").value.trim()});
+  nameEl.value=""; document.getElementById("inventoryQuantity").value="1"; document.getElementById("inventoryDetails").value="";
+  renderInventory(); queueSave();
+});
+document.querySelectorAll("[data-resource]").forEach(button=>button.addEventListener("click",()=>{
+  const input=document.getElementById(button.dataset.resource);
+  const delta=Number(button.dataset.delta);
+  const maxId=button.dataset.resource.replace("Current","Max");
+  const max=Number(document.getElementById(maxId)?.value)||999;
+  input.value=Math.max(0,Math.min(max,(Number(input.value)||0)+delta));
+  queueSave();
+}));
+for(const id of ["vitalityCurrent","vitalityMax","sanityCurrent","sanityMax","energyCurrent","energyMax","conditionsInput"]){
+  document.getElementById(id).addEventListener("change",()=>{
+    if(id.endsWith("Max")){ const current=document.getElementById(id.replace("Max","Current")); current.value=Math.min(Number(current.value)||0,Number(document.getElementById(id).value)||0); }
+    queueSave();
+  });
 }
 function queueSave(){
   if(loadingCharacter) return;
