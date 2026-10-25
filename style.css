@@ -151,3 +151,45 @@ input[type=checkbox],input[type=radio]{accent-color:var(--gold);cursor:pointer}
 @media(max-width:650px){
   .attribute input[type=number]{width:62px;min-height:44px}
 }
+
+
+/* Acabamento do histórico e dos menus nativos */
+.dice-history-side,
+.roll-history-list{
+  scrollbar-width:thin;
+  scrollbar-color:#9a7955 #171411;
+}
+.dice-history-side::-webkit-scrollbar,
+.roll-history-list::-webkit-scrollbar{
+  width:9px;
+}
+.dice-history-side::-webkit-scrollbar-track,
+.roll-history-list::-webkit-scrollbar-track{
+  background:#171411;
+  border-left:1px solid #302820;
+}
+.dice-history-side::-webkit-scrollbar-thumb,
+.roll-history-list::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,#b08a5e,#72563b);
+  border:2px solid #171411;
+  border-radius:10px;
+}
+.dice-history-side::-webkit-scrollbar-thumb:hover,
+.roll-history-list::-webkit-scrollbar-thumb:hover{
+  background:#c6a77b;
+}
+.field select option,
+.roll-controls select option{
+  background:#171411;
+  color:#eee8dd;
+  padding:9px 12px;
+}
+.field select option:checked,
+.roll-controls select option:checked{
+  background:#3b2b20;
+  color:#e2c398;
+}
+.field select option:hover,
+.roll-controls select option:hover{
+  background:#3b2b20;
+}
