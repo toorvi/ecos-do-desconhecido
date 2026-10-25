@@ -30,3 +30,14 @@
 .roll-history-main span,.roll-history-item time{font-size:11px;color:var(--muted);line-height:1.5}
 .roll-history-item time{text-align:right;white-space:nowrap}
 @media(max-width:650px){.roll-history-item{align-items:flex-start;flex-direction:column;gap:7px}.roll-history-item time{text-align:left}}
+
+/* Mantém o histórico de rolagens ao lado do dado em telas largas. */
+.dice-history-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:stretch}
+.dice-history-layout .dice-panel{align-content:center;min-width:0}
+.dice-history-side{border:1px solid var(--line);background:#11100f55;padding:16px;min-width:0;max-height:290px;overflow-y:auto}
+.dice-history-side .roll-history-heading{margin:0 0 12px;padding-bottom:10px}
+.dice-history-side .roll-history-heading h3{font-size:16px}
+.dice-history-side .roll-history-list{margin-top:10px}
+.dice-history-side .roll-history-item{padding:10px;align-items:flex-start}
+.dice-history-side .roll-history-item time{font-size:10px}
+@media(max-width:700px){.dice-history-layout{grid-template-columns:1fr}.dice-history-side{max-height:260px}}
