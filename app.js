@@ -74,9 +74,12 @@ document.getElementById("removeCharacterPhoto").addEventListener("click", async(
   await db.storage.from("character-photos").remove([oldPath]);
 });
 
+function selectedArchetypes(){ return [...document.querySelectorAll("input[name=archetypes]:checked")].map(input=>input.value); }
+function setArchetypes(values){ const selected = Array.isArray(values) ? values : []; document.querySelectorAll("input[name=archetypes]").forEach(input=>{ input.checked = selected.includes(input.value); }); }
 function localData(){
   const data = {};
   for(const id of fields) data[id] = document.getElementById(id)?.value ?? "";
+  data.archetypes = selectedArchetypes();
   return data;
 }
 function applyData(data){
