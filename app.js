@@ -14,6 +14,8 @@ const fieldToColumn = {
 const status = document.getElementById("saveStatus");
 const authPanel = document.getElementById("authPanel");
 const accountPanel = document.getElementById("accountPanel");
+const libraryPanel = document.getElementById("libraryPanel");
+const characterSheet = document.getElementById("characterSheet");
 const authMessage = document.getElementById("authMessage");
 const storageKey = "ecos-ficha-preview-v1";
 let currentUser = null;
@@ -102,24 +104,75 @@ function clearCharacterForm(){
 }
 function setPickerOptions(rows){
   const picker = document.getElementById("characterPicker");
-  picker.replaceChildren(new Option("Nova ficha",""));
+  picker.replaceChildren(new Option("Selecione uma ficha",""));
   rows.forEach(row => picker.add(new Option(row.character_name || "Ficha sem nome", row.id)));
 }
+function showLibrary(){
+  libraryPanel.hidden = false;
+  characterSheet.hidden = true;
+  accountPanel.hidden = true;
+}
+function showCharacterSheet(){
+  libraryPanel.hidden = true;
+  characterSheet.hidden = false;
+  accountPanel.hidden = true;
+}
+function renderCharacterCards(rows){
+  const container = document.getElementById("characterCards");
+  container.replaceChildren();
+  if(!rows.length){
+    const empty = document.createElement("div");
+    empty.className = "empty-library";
+    empty.innerHTML = "<span>◉</span><h3>Nenhuma ficha encontrada</h3><p>Seu arquivo ainda está vazio. Crie seu primeiro personagem para começar.</p>";
+    container.append(empty);
+    document.getElementById("librarySubtitle").textContent = "Você ainda não tem personagens salvos.";
+    return;
+  }
+  document.getElementById("librarySubtitle").textContent = `${rows.length} ${rows.length === 1 ? "personagem salvo" : "personagens salvos"} no seu arquivo.`;
+  rows.forEach(row=>{
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "character-card";
+    card.addEventListener("click", async()=>{ await openCharacter(row.id); showCharacterSheet(); });
+    const portrait = document.createElement("div");
+    portrait.className = "character-card-portrait";
+    if(row.image_path){
+      const {data} = db.storage.from("character-photos").getPublicUrl(row.image_path);
+      const img = document.createElement("img");
+      img.src = data.publicUrl;
+      img.alt = "";
+      portrait.append(img);
+    }else{
+      portrait.textContent = "◉";
+    }
+    const details = document.createElement("div");
+    details.className = "character-card-details";
+    const name = document.createElement("strong");
+    name.textContent = row.character_name || "Personagem sem nome";
+    const concept = document.createElement("span");
+    concept.textContent = row.concept || "Conceito ainda não definido";
+    const player = document.createElement("small");
+    player.textContent = row.player_name || "Jogador não informado";
+    details.append(name,concept,player);
+    card.append(portrait,details);
+    container.append(card);
+  });
+}
 async function loadCharacters(selectId = null){
-  const query = db.from("characters").select("*").order("updated_at", {ascending:false});
-  const {data,error} = await query;
+  const {data,error} = await db.from("characters").select("*").order("updated_at", {ascending:false});
   if(error){ status.textContent = "Não foi possível carregar as fichas: " + error.message; return; }
-  setPickerOptions(data || []);
-  if(selectId && (data || []).some(row => row.id === selectId)){
+  const rows = data || [];
+  setPickerOptions(rows);
+  renderCharacterCards(rows);
+  if(selectId && rows.some(row=>row.id===selectId)){
     document.getElementById("characterPicker").value = selectId;
     await openCharacter(selectId);
-  }else if(data && data.length){
-    document.getElementById("characterPicker").value = data[0].id;
-    await openCharacter(data[0].id);
+    showCharacterSheet();
   }else{
     currentCharacterId = null;
     clearCharacterForm();
-    status.textContent = "Nova ficha · preencha os campos e aguarde o salvamento online.";
+    showLibrary();
+    status.textContent = rows.length ? "Escolha uma ficha para abrir." : "Crie seu primeiro personagem.";
   }
 }
 async function openCharacter(id){
@@ -222,13 +275,17 @@ async function refreshSession(session){
     isGM = false;
     authPanel.hidden = false;
     accountPanel.hidden = true;
+    libraryPanel.hidden = true;
+    characterSheet.hidden = true;
     document.getElementById("gmPanel").hidden = true;
     setAuthMessage("Você ainda não está conectado.");
     status.textContent = "Prévia local · entre para salvar fichas online.";
     return;
   }
   authPanel.hidden = true;
-  accountPanel.hidden = false;
+  accountPanel.hidden = true;
+  libraryPanel.hidden = false;
+  characterSheet.hidden = true;
   document.getElementById("accountLabel").textContent = currentUser.email || "Conta conectada";
   const {data:profile,error} = await db.from("profiles").select("role, display_name").eq("id",currentUser.id).single();
   isGM = !error && profile?.role === "gm";
@@ -271,7 +328,10 @@ document.getElementById("logoutButton").addEventListener("click", async()=>{
   if(error) setAuthMessage("Erro ao sair: " + error.message);
   else { currentUser = null; await refreshSession(null); }
 });
-document.getElementById("characterPicker").addEventListener("change", e=>openCharacter(e.target.value));
+document.getElementById("characterPicker").addEventListener("change", async e=>{ if(e.target.value){ await openCharacter(e.target.value); showCharacterSheet(); } });
+document.getElementById("createCharacterButton").addEventListener("click",()=>{ currentCharacterId=null; clearCharacterForm(); document.getElementById("characterPicker").value=""; showCharacterSheet(); status.textContent="Nova ficha · preencha os campos para salvar online."; });
+document.getElementById("backToLibraryButton").addEventListener("click",async()=>{ await loadCharacters(currentCharacterId); showLibrary(); });
+document.getElementById("libraryLogoutButton").addEventListener("click",async()=>{ const {error}=await db.auth.signOut(); if(error) setAuthMessage("Erro ao sair: "+error.message); else await refreshSession(null); });
 for(const id of fields){
   const el = document.getElementById(id);
   el?.addEventListener("input", queueSave);
@@ -372,6 +432,8 @@ document.getElementById("updatePasswordButton").addEventListener("click", async(
   if(isRecovery){
     authPanel.hidden = true;
     accountPanel.hidden = true;
+    libraryPanel.hidden = true;
+    characterSheet.hidden = true;
     document.getElementById("gmPanel").hidden = true;
     document.getElementById("resetPasswordPanel").hidden = false;
     setAuthMessage("Defina uma nova senha para continuar.");
