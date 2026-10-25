@@ -60,8 +60,25 @@
       </div>
     </section>
 
-    <section class="sheet">
+    <section class="sheet library-panel" id="libraryPanel" hidden>
+      <div class="account-row"><div><p class="eyebrow">ARQUIVO PESSOAL</p><h2>Suas fichas</h2><p id="librarySubtitle" class="auth-message">Seus personagens, reunidos em um só lugar.</p></div><button id="libraryLogoutButton" class="quiet-button" type="button">Sair</button></div>
+      <div id="characterCards" class="character-cards"></div>
+      <div class="library-actions"><button id="createCharacterButton" type="button">＋ Criar personagem</button></div>
+      <div id="gmPanel" hidden>
+        <div class="section-title"><span>GM</span><h3>Segredos do mestre</h3><p>Somente o mestre deve acessar.</p></div>
+        <label class="field">Título do segredo<input id="secretTitle" placeholder="Ex.: O verdadeiro motivo do desaparecimento"></label>
+        <label class="field">Conteúdo secreto<textarea id="secretContent" rows="4" placeholder="Informações que os jogadores não devem ver"></textarea></label>
+        <div class="auth-actions"><button id="saveSecretButton" type="button">Salvar segredo</button><button id="clearSecretButton" class="quiet-button" type="button">Novo segredo</button></div>
+        <label class="field">Segredos desta ficha<select id="secretPicker"><option value="">Novo segredo</option></select></label>
+        <p id="secretMessage" class="auth-message" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="sheet character-sheet" id="characterSheet" hidden>
       <div class="sheet-heading">
+        <div><p class="eyebrow">IDENTIFICAÇÃO</p><h2>Ficha de personagem</h2></div>
+        <div class="sheet-heading-actions"><button id="backToLibraryButton" class="quiet-button" type="button">← Minhas fichas</button><span class="seal">ED<br><small>01</small></span></div>
+      </div>
         <div><p class="eyebrow">IDENTIFICAÇÃO</p><h2>Ficha de personagem</h2></div>
         <span class="seal">ED<br><small>01</small></span>
       </div>
