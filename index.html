@@ -50,9 +50,6 @@
       <div class="identity-grid">
         <label class="field full">Minhas fichas<select id="characterPicker"><option value="">Nova ficha</option></select></label>
       </div>
-      <div class="section-title roll-history-heading"><span>⌁</span><h3>Histórico de rolagens</h3><p>Suas rolagens ficam registradas aqui.</p></div>
-      <p id="rollHistoryMessage" class="auth-message" aria-live="polite">Entre para consultar o histórico.</p>
-      <div id="rollHistoryList" class="roll-history-list"></div>
       <div id="gmPanel" hidden>
         <div class="section-title"><span>GM</span><h3>Segredos do mestre</h3><p>Somente o mestre deve acessar.</p></div>
         <label class="field">Título do segredo<input id="secretTitle" placeholder="Ex.: O verdadeiro motivo do desaparecimento"></label>
@@ -85,16 +82,23 @@
       </div>
 
       <div class="section-title"><span>02</span><h3>Teste de destino</h3><p>Role 1d20. Some um atributo quando necessário.</p></div>
-      <div class="dice-panel">
-        <div class="die" id="dieResult" aria-live="polite">20</div>
-        <div class="dice-copy"><strong>O acaso não explica tudo.</strong><span id="rollMessage">Quando estiver pronto, lance os dados.</span></div>
-        <div class="roll-controls">
-          <select id="rollAttribute" aria-label="Atributo para somar">
-            <option value="0">Sem atributo (+0)</option>
-            <option value="corpo">Corpo</option><option value="instinto">Instinto</option><option value="razao">Razão</option><option value="determinacao">Determinação</option><option value="influencia">Influência</option>
-          </select>
-          <button id="rollButton" type="button">Rolar d20 ↗</button>
+      <div class="dice-history-layout">
+        <div class="dice-panel">
+          <div class="die" id="dieResult" aria-live="polite">20</div>
+          <div class="dice-copy"><strong>O acaso não explica tudo.</strong><span id="rollMessage">Quando estiver pronto, lance os dados.</span></div>
+          <div class="roll-controls">
+            <select id="rollAttribute" aria-label="Atributo para somar">
+              <option value="0">Sem atributo (+0)</option>
+              <option value="corpo">Corpo</option><option value="instinto">Instinto</option><option value="razao">Razão</option><option value="determinacao">Determinação</option><option value="influencia">Influência</option>
+            </select>
+            <button id="rollButton" type="button">Rolar d20 ↗</button>
+          </div>
         </div>
+        <aside class="dice-history-side">
+          <div class="section-title roll-history-heading"><span>⌁</span><h3>Histórico de rolagens</h3></div>
+          <p id="rollHistoryMessage" class="auth-message" aria-live="polite">Entre para consultar o histórico.</p>
+          <div id="rollHistoryList" class="roll-history-list"></div>
+        </aside>
       </div>
 
       <div class="section-title"><span>03</span><h3>Conexão & descobertas</h3><p>O desconhecido sempre cobra alguma coisa.</p></div>
