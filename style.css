@@ -193,3 +193,6 @@ input[type=checkbox],input[type=radio]{accent-color:var(--gold);cursor:pointer}
 .roll-controls select option:hover{
   background:#3b2b20;
 }
+
+
+.archetype-help{font-size:12px;line-height:1.7;color:var(--muted);max-width:680px;margin:-5px 0 16px}.archetype-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.archetype-option{display:flex;align-items:flex-start;gap:12px;padding:15px;border:1px solid var(--line);background:linear-gradient(145deg,#1b1815,#121110);cursor:pointer;transition:border-color .18s,background .18s,box-shadow .18s}.archetype-option:hover{border-color:#80654b;background:#211a15}.archetype-option:has(input:checked){border-color:var(--gold);background:linear-gradient(145deg,#302319,#191512);box-shadow:inset 0 0 0 1px #c6a77b22}.archetype-option input{margin:4px 0 0;accent-color:var(--gold);flex-shrink:0}.archetype-mark{color:var(--gold);font-size:22px;line-height:1.2;width:24px;text-align:center;flex-shrink:0}.archetype-option strong{display:block;font-family:Cinzel,serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px}.archetype-option small{display:block;color:var(--muted);font-size:11px;line-height:1.55}.archetype-option:has(input:checked) strong{color:var(--gold)}@media(max-width:650px){.archetype-grid{grid-template-columns:1fr}.archetype-option{padding:13px}}
