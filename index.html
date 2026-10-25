@@ -65,6 +65,10 @@
         <div><p class="eyebrow">IDENTIFICAÇÃO</p><h2>Ficha de personagem</h2></div>
         <span class="seal">ED<br><small>01</small></span>
       </div>
+      <div class="character-photo-editor">
+        <div class="character-photo-frame"><img id="characterPhotoPreview" alt="Retrato do personagem" hidden><span id="characterPhotoPlaceholder">SEM<br>RETRATO</span></div>
+        <div class="character-photo-controls"><label class="field">Foto do personagem<input id="characterPhotoInput" type="file" accept="image/jpeg,image/png,image/webp"></label><p class="photo-help">JPG, PNG ou WebP · até 5 MB. A foto fica salva na ficha.</p><button id="removeCharacterPhoto" class="quiet-button" type="button">Remover foto</button><p id="photoMessage" class="auth-message" aria-live="polite"></p></div>
+      </div>
       <div class="identity-grid">
         <label class="field wide">Nome do personagem<input id="characterName" placeholder="Nome ou codinome"></label>
         <label class="field">Jogador<input id="playerName" placeholder="Seu nome"></label>
