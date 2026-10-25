@@ -82,6 +82,7 @@ function localData(){
 function applyData(data){
   setCharacterPhoto(data.image_path || null);
   loadingCharacter = true;
+  setArchetypes(data.archetypes || []);
   for(const id of fields){
     const el = document.getElementById(id);
     const column = fieldToColumn[id];
@@ -93,6 +94,7 @@ function applyData(data){
 function clearCharacterForm(){
   setCharacterPhoto(null);
   loadingCharacter = true;
+  setArchetypes([]);
   for(const id of fields){
     const el = document.getElementById(id);
     if(!el) continue;
@@ -202,6 +204,7 @@ async function saveCharacter(){
   }
   payload.user_id = currentUser.id;
   payload.image_path = currentImagePath;
+  payload.archetypes = selectedArchetypes();
   status.textContent = "Salvando online…";
   let result;
   if(currentCharacterId){
@@ -337,6 +340,7 @@ for(const id of fields){
   el?.addEventListener("input", queueSave);
   el?.addEventListener("change", queueSave);
 }
+document.querySelectorAll("input[name=archetypes]").forEach(el=>el.addEventListener("change",queueSave));
 document.getElementById("rollButton").addEventListener("click", async()=>{
   const roll = Math.floor(Math.random()*20)+1;
   const selected = document.getElementById("rollAttribute").value;
