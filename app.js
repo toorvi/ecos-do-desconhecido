@@ -19,17 +19,66 @@ const storageKey = "ecos-ficha-preview-v1";
 let currentUser = null;
 let isGM = false;
 let currentCharacterId = null;
+let currentImagePath = null;
 let saveTimer = null;
 let loadingCharacter = false;
 let secrets = [];
 
 function setAuthMessage(message){ authMessage.textContent = message; }
+
+function setCharacterPhoto(path){
+  currentImagePath = path;
+  const img = document.getElementById("characterPhotoPreview");
+  const placeholder = document.getElementById("characterPhotoPlaceholder");
+  if(path){
+    const {data} = db.storage.from("character-photos").getPublicUrl(path);
+    img.src = data.publicUrl;
+    img.hidden = false;
+    placeholder.hidden = true;
+  }else{
+    img.removeAttribute("src");
+    img.hidden = true;
+    placeholder.hidden = false;
+  }
+}
+document.getElementById("characterPhotoInput").addEventListener("change", async event=>{
+  const file = event.target.files?.[0];
+  const message = document.getElementById("photoMessage");
+  if(!file) return;
+  if(!currentUser){ message.textContent = "Entre na sua conta para enviar uma foto."; event.target.value = ""; return; }
+  if(!currentCharacterId){ message.textContent = "Preencha e salve a ficha primeiro, depois envie a foto."; event.target.value = ""; return; }
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type) || file.size > 5*1024*1024){
+    message.textContent = "Escolha JPG, PNG ou WebP com até 5 MB."; event.target.value = ""; return;
+  }
+  message.textContent = "Enviando foto…";
+  const path = `${currentUser.id}/${currentCharacterId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,"_")}`;
+  const {error:uploadError} = await db.storage.from("character-photos").upload(path,file,{upsert:true,contentType:file.type});
+  if(uploadError){ message.textContent = "Não foi possível enviar: " + uploadError.message; return; }
+  const {error:updateError} = await db.from("characters").update({image_path:path}).eq("id",currentCharacterId);
+  if(updateError){ message.textContent = "Foto enviada, mas não foi vinculada à ficha: " + updateError.message; return; }
+  setCharacterPhoto(path);
+  message.textContent = "Foto salva na ficha.";
+  event.target.value = "";
+});
+document.getElementById("removeCharacterPhoto").addEventListener("click", async()=>{
+  const message = document.getElementById("photoMessage");
+  if(!currentImagePath){ message.textContent = "Esta ficha não tem foto."; return; }
+  if(!currentUser || !currentCharacterId){ message.textContent = "Entre e selecione uma ficha salva."; return; }
+  const oldPath = currentImagePath;
+  const {error} = await db.from("characters").update({image_path:null}).eq("id",currentCharacterId);
+  if(error){ message.textContent = "Não foi possível remover a foto: " + error.message; return; }
+  setCharacterPhoto(null);
+  message.textContent = "Foto removida da ficha.";
+  await db.storage.from("character-photos").remove([oldPath]);
+});
+
 function localData(){
   const data = {};
   for(const id of fields) data[id] = document.getElementById(id)?.value ?? "";
   return data;
 }
 function applyData(data){
+  setCharacterPhoto(data.image_path || null);
   loadingCharacter = true;
   for(const id of fields){
     const el = document.getElementById(id);
@@ -40,6 +89,7 @@ function applyData(data){
   loadingCharacter = false;
 }
 function clearCharacterForm(){
+  setCharacterPhoto(null);
   loadingCharacter = true;
   for(const id of fields){
     const el = document.getElementById(id);
@@ -98,6 +148,7 @@ async function saveCharacter(){
     payload[column] = value;
   }
   payload.user_id = currentUser.id;
+  payload.image_path = currentImagePath;
   status.textContent = "Salvando online…";
   let result;
   if(currentCharacterId){
