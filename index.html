@@ -125,7 +125,28 @@
         </aside>
       </div>
 
-      <div class="section-title"><span>03</span><h3>Conexão & descobertas</h3><p>O desconhecido sempre cobra alguma coisa.</p></div>
+      <div class="section-title"><span>03</span><h3>Recursos & condições</h3><p>Controle o estado atual do personagem.</p></div>
+      <div class="resource-grid">
+        <label class="resource-card"><span>✚</span><strong>Vitalidade</strong><small>Vida e resistência física</small><div class="resource-values"><input id="vitalityCurrent" type="number" min="0" value="10" aria-label="Vitalidade atual"><i>/</i><input id="vitalityMax" type="number" min="1" value="10" aria-label="Vitalidade máxima"></div><div class="resource-actions"><button type="button" data-resource="vitalityCurrent" data-delta="-1" class="quiet-button">−</button><button type="button" data-resource="vitalityCurrent" data-delta="1" class="quiet-button">+</button></div></label>
+        <label class="resource-card"><span>◉</span><strong>Sanidade</strong><small>Estabilidade diante do inexplicável</small><div class="resource-values"><input id="sanityCurrent" type="number" min="0" value="10" aria-label="Sanidade atual"><i>/</i><input id="sanityMax" type="number" min="1" value="10" aria-label="Sanidade máxima"></div><div class="resource-actions"><button type="button" data-resource="sanityCurrent" data-delta="-1" class="quiet-button">−</button><button type="button" data-resource="sanityCurrent" data-delta="1" class="quiet-button">+</button></div></label>
+        <label class="resource-card"><span>⌁</span><strong>Energia</strong><small>Fôlego para agir e resistir</small><div class="resource-values"><input id="energyCurrent" type="number" min="0" value="5" aria-label="Energia atual"><i>/</i><input id="energyMax" type="number" min="1" value="5" aria-label="Energia máxima"></div><div class="resource-actions"><button type="button" data-resource="energyCurrent" data-delta="-1" class="quiet-button">−</button><button type="button" data-resource="energyCurrent" data-delta="1" class="quiet-button">+</button></div></label>
+      </div>
+      <div class="conditions-panel">
+        <label class="field full">Condições atuais<input id="conditionsInput" placeholder="Ex.: ferido, abalado, exausto — separe por vírgulas"></label>
+        <p class="resource-note">Os valores iniciais são sugestões: ajuste-os às regras da sua campanha.</p>
+      </div>
+
+      <div class="section-title"><span>04</span><h3>Inventário</h3><p>Itens, armas, pistas e objetos importantes.</p></div>
+      <div class="inventory-add">
+        <label class="field">Nome do item<input id="inventoryName" placeholder="Ex.: lanterna, revólver, chave antiga"></label>
+        <label class="field">Quantidade<input id="inventoryQuantity" type="number" min="1" value="1"></label>
+        <label class="field">Detalhes<input id="inventoryDetails" placeholder="Descrição ou observações (opcional)"></label>
+        <button id="addInventoryItem" type="button">＋ Adicionar item</button>
+      </div>
+      <p id="inventoryMessage" class="auth-message" aria-live="polite">Nenhum item adicionado.</p>
+      <div id="inventoryList" class="inventory-list"></div>
+
+      <div class="section-title"><span>05</span><h3>Conexão & descobertas</h3><p>O desconhecido sempre cobra alguma coisa.</p></div>
       <div class="identity-grid">
         <label class="field">Nível de Conexão<select id="connection"><option value="0">0 — Adormecida</option><option value="1">1 — Latente</option><option value="2">2 — Desperta</option><option value="3">3 — Ressonante</option><option value="4">4 — Anômala</option></select></label>
         <label class="field">Condição atual<input id="condition" placeholder="Ex.: abalado, ferido..."></label>
